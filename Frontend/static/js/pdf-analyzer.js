@@ -201,6 +201,29 @@ function initAnalysisFilters() {
       if (typeof switchSection === 'function') switchSection('study-planner');
     });
   }
+
+  // Reset PDF Analysis (Upload Another PDF)
+  const resetBtn = document.getElementById('reset-pdf-analysis-btn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', resetPdfAnalysis);
+  }
+}
+
+function resetPdfAnalysis() {
+  analysisData = null;
+  filteredQuestions = [];
+  
+  // Show upload zone
+  const uploadZone = document.getElementById('pdf-upload-zone');
+  if (uploadZone) uploadZone.style.display = 'block';
+  
+  // Hide results
+  const resultsDiv = document.getElementById('pdf-analysis-results');
+  if (resultsDiv) resultsDiv.style.display = 'none';
+  
+  // Clear file input
+  const fileInput = document.getElementById('pdf-file-input');
+  if (fileInput) fileInput.value = '';
 }
 
 // PYQ Priority Checker (single question)
