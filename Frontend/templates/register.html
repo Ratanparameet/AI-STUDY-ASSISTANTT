@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up — AI Study Assistant</title>
+  <meta name="description" content="Create your AI Study Assistant account">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="bg-mesh"></div>
+  <div class="toast-container" id="toast-container"></div>
+
+  <div class="auth-page">
+    <div class="auth-card" style="max-width:500px">
+      <div class="auth-logo">🎓</div>
+      <h1>Create Account</h1>
+      <p class="auth-subtitle">Start your intelligent study journey</p>
+
+      <form id="register-form" autocomplete="on">
+        <div class="form-group">
+          <label class="form-label" for="reg-name">Full Name *</label>
+          <input type="text" class="form-input" id="reg-name" placeholder="Your full name" required autocomplete="name">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Email Address *</label>
+          <input type="email" class="form-input" id="reg-email" placeholder="you@example.com" required autocomplete="email">
+          <div class="form-error" id="email-error" style="display:none"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-password">Password *</label>
+          <div class="password-wrapper">
+            <input type="password" class="form-input" id="reg-password" placeholder="Min 8 chars, uppercase, number, symbol" required autocomplete="new-password">
+            <button type="button" class="password-toggle" id="toggle-pwd1">👁️</button>
+          </div>
+          <div id="password-strength" style="margin-top:8px"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-confirm">Confirm Password *</label>
+          <div class="password-wrapper">
+            <input type="password" class="form-input" id="reg-confirm" placeholder="Re-enter your password" required autocomplete="new-password">
+            <button type="button" class="password-toggle" id="toggle-pwd2">👁️</button>
+          </div>
+          <div class="form-error" id="confirm-error" style="display:none"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-college">College Name (Optional)</label>
+          <input type="text" class="form-input" id="reg-college" placeholder="Your college/university">
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="form-group">
+            <label class="form-label" for="reg-branch">Branch</label>
+            <input type="text" class="form-input" id="reg-branch" placeholder="e.g. ECE, CSE">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-semester">Semester</label>
+            <input type="text" class="form-input" id="reg-semester" placeholder="e.g. 5th">
+          </div>
+        </div>
+
+        <div style="margin-bottom:20px">
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:0.85rem;color:var(--text-secondary)">
+            <input type="checkbox" id="accept-terms" required style="accent-color:var(--accent);margin-top:3px;width:16px;height:16px">
+            I agree to the <a href="#" style="color:var(--accent)">Terms & Conditions</a> and <a href="#" style="color:var(--accent)">Privacy Policy</a>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%" id="register-btn">
+          Create Account
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Already have an account? <a href="/login">Sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    if (localStorage.getItem('auth_token')) window.location.href = '/';
+
+    // Toggle password visibility
+    document.getElementById('toggle-pwd1').addEventListener('click', function() {
+      const f = document.getElementById('reg-password');
+      f.type = f.type === 'password' ? 'text' : 'password';
+      this.textContent = f.type === 'password' ? '👁️' : '🙈';
+    });
+    document.getElementById('toggle-pwd2').addEventListener('click', function() {
+      const f = document.getElementById('reg-confirm');
+      f.type = f.type === 'password' ? 'text' : 'password';
+      this.textContent = f.type === 'password' ? '👁️' : '🙈';
+    });
+
+    // Password strength indicator
+    document.getElementById('reg-password').addEventListener('input', function() {
+      const pwd = this.value;
+      const el = document.getElementById('password-strength');
+      let score = 0;
+      let checks = [];
+      if (pwd.length >= 8) { score++; checks.push('✅ 8+ chars'); } else { checks.push('❌ 8+ chars'); }
+      if (/[A-Z]/.test(pwd)) { score++; checks.push('✅ Uppercase'); } else { checks.push('❌ Uppercase'); }
+      if (/[a-z]/.test(pwd)) { score++; checks.push('✅ Lowercase'); } else { checks.push('❌ Lowercase'); }
+      if (/\d/.test(pwd)) { score++; checks.push('✅ Number'); } else { checks.push('❌ Number'); }
+      if (/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) { score++; checks.push('✅ Symbol'); } else { checks.push('❌ Symbol'); }
+
+      const colors = ['var(--danger)', 'var(--danger)', 'var(--warning)', 'var(--warning)', 'var(--success)', 'var(--success)'];
+      el.innerHTML = `
+        <div style="display:flex;gap:4px;margin-bottom:6px">
+          ${[0,1,2,3,4].map(i => `<div style="flex:1;height:4px;border-radius:2px;background:${i < score ? colors[score] : 'var(--bg-tertiary)'}"></div>`).join('')}
+        </div>
+        <div style="font-size:0.72rem;color:var(--text-tertiary);display:flex;flex-wrap:wrap;gap:8px">${checks.join(' ')}</div>
+      `;
+    });
+
+    // Confirm password check
+    document.getElementById('reg-confirm').addEventListener('input', function() {
+      const err = document.getElementById('confirm-error');
+      if (this.value && this.value !== document.getElementById('reg-password').value) {
+        err.textContent = 'Passwords do not match';
+        err.style.display = 'block';
+      } else {
+        err.style.display = 'none';
+      }
+    });
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast ' + type;
+      toast.innerHTML = `<span>${message}</span><button class="toast-close" onclick="this.parentElement.remove()">✕</button>`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    // Register form
+    document.getElementById('register-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const pwd = document.getElementById('reg-password').value;
+      const confirm = document.getElementById('reg-confirm').value;
+
+      if (pwd !== confirm) {
+        showToast('Passwords do not match', 'error');
+        return;
+      }
+
+      // Email validation
+      const email = document.getElementById('reg-email').value.trim();
+      if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
+        showToast('Please enter a valid email address', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('register-btn');
+      btn.disabled = true;
+      btn.textContent = 'Creating account...';
+
+      try {
+        const res = await fetch('/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: document.getElementById('reg-name').value.trim(),
+            email: email,
+            password: pwd,
+            college: document.getElementById('reg-college').value.trim(),
+            branch: document.getElementById('reg-branch').value.trim(),
+            semester: document.getElementById('reg-semester').value.trim()
+          })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          showToast('Account created successfully! Redirecting to login...', 'success');
+          setTimeout(() => window.location.href = '/login', 1500);
+        } else {
+          showToast(data.detail || 'Registration failed', 'error');
+        }
+      } catch (err) {
+        showToast('Could not reach server. Is the backend running?', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
+    });
+  </script>
+</body>
+</html>

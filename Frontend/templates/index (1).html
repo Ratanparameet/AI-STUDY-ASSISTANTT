@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PYQ Priority Check · Study Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="grid-bg"></div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="mark">PYQ</div>
+      <div class="header-text">
+        <h1>Priority Check</h1>
+        <p>Paste a question. Find out how often it's shown up before — and whether it's worth your time tonight.</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- Mode toggle -->
+    <div class="mode-toggle" role="tablist">
+      <button class="mode-btn is-active" data-mode="single" role="tab" aria-selected="true">One question</button>
+      <button class="mode-btn" data-mode="batch" role="tab" aria-selected="false">Multiple questions</button>
+    </div>
+
+    <!-- SINGLE QUESTION PANEL -->
+    <section class="panel" id="panel-single">
+      <label class="field-label" for="question-input">Question or topic</label>
+      <div class="paper-input">
+        <textarea id="question-input" rows="3" placeholder="e.g. Explain deadlock in operating systems"></textarea>
+      </div>
+      <div class="actions">
+        <button class="btn-primary" id="check-btn">Check priority</button>
+        <span class="hint" id="single-hint"></span>
+      </div>
+
+      <div id="result-area" class="result-area" hidden></div>
+    </section>
+
+    <!-- BATCH PANEL -->
+    <section class="panel" id="panel-batch" hidden>
+      <label class="field-label" for="batch-input">Questions — one per line</label>
+      <div class="paper-input">
+        <textarea id="batch-input" rows="6" placeholder="Deadlock&#10;Paging&#10;RAID Levels"></textarea>
+      </div>
+      <div class="actions">
+        <button class="btn-primary" id="batch-btn">Check all</button>
+        <span class="hint" id="batch-hint"></span>
+      </div>
+
+      <div id="batch-result-area" class="batch-result-area" hidden>
+        <table class="batch-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Priority</th>
+              <th>Repeated</th>
+              <th>Papers</th>
+              <th>Marks</th>
+              <th>Source</th>
+            </tr>
+          </thead>
+          <tbody id="batch-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="status-line" id="status-line"></p>
+
+  </main>
+
+  <footer class="site-footer">
+    <span id="footer-status">checking backend…</span>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

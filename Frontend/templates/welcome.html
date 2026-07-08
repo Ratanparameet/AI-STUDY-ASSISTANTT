@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome — AI Study Assistant</title>
+  <meta name="description" content="AI-powered study assistant that analyzes question papers, generates MCQs, and creates personalized study plans.">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="bg-mesh"></div>
+
+  <div class="welcome-page">
+    <div class="welcome-hero" style="position:relative;z-index:1">
+      <div style="width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,var(--accent),#a855f7);display:flex;align-items:center;justify-content:center;font-size:2rem;color:white;margin:0 auto 28px;box-shadow:0 8px 32px rgba(124,58,237,0.35)">🎓</div>
+      <h1>AI Study Assistant</h1>
+      <p>Upload question papers, get AI-powered priority analysis, practice with auto-generated MCQs, and follow personalized study plans — all in one place.</p>
+      <div class="welcome-buttons">
+        <a href="/login" class="btn btn-primary btn-lg" id="welcome-login-btn">Sign In</a>
+        <a href="/signup" class="btn btn-secondary btn-lg" id="welcome-signup-btn">Create Account</a>
+      </div>
+    </div>
+
+    <div class="welcome-features">
+      <a href="/login" class="welcome-feature-card">
+        <div class="feature-icon">📄</div>
+        <h3>PDF Analysis</h3>
+        <p>Upload question papers and get instant priority analysis with similarity scoring</p>
+      </a>
+      <a href="/login" class="welcome-feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3>Smart MCQs</h3>
+        <p>Auto-generated practice tests with timer, scoring, and detailed answer review</p>
+      </a>
+      <a href="/login" class="welcome-feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Study Planner</h3>
+        <p>Personalized day-by-day study plans based on your weak areas and priorities</p>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Redirect to dashboard if already logged in
+    if (localStorage.getItem('auth_token')) {
+      window.location.href = '/';
+    }
+  </script>
+</body>
+</html>

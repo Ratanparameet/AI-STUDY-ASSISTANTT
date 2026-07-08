@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — AI Study Assistant</title>
+  <meta name="description" content="AI Study Assistant Dashboard — Analyze papers, practice MCQs, and track your progress">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+  <div class="toast-container" id="toast-container"></div>
+  <div class="spinner-overlay hidden" id="loading-overlay">
+    <div style="text-align:center">
+      <div class="spinner"></div>
+      <p class="loading-text" id="loading-text">Loading...</p>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">🎓</div>
+      <div>
+        <div class="brand-text">StudyAI</div>
+        <div class="brand-sub">Intelligent Assistant</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <button class="nav-item active" data-section="dashboard" id="nav-dashboard">
+        <span class="nav-icon">📊</span> Dashboard
+      </button>
+      <button class="nav-item" data-section="pdf-analyzer" id="nav-pdf-analyzer">
+        <span class="nav-icon">📄</span> Question Paper Analyzer
+      </button>
+      <button class="nav-item" data-section="mcq-test" id="nav-mcq-test">
+        <span class="nav-icon">🧠</span> MCQ Practice
+      </button>
+      <button class="nav-item" data-section="study-planner" id="nav-study-planner">
+        <span class="nav-icon">📅</span> Study Planner
+      </button>
+
+      <div class="nav-section-label">Tools</div>
+      <button class="nav-item" data-section="pyq-checker" id="nav-pyq-checker">
+        <span class="nav-icon">🔍</span> PYQ Priority Check
+      </button>
+      <button class="nav-item" data-section="history" id="nav-history">
+        <span class="nav-icon">📜</span> History
+      </button>
+
+      <div class="nav-section-label">Account</div>
+      <button class="nav-item" data-section="profile" id="nav-profile">
+        <span class="nav-icon">👤</span> Profile
+      </button>
+      <button class="nav-item" data-section="settings" id="nav-settings">
+        <span class="nav-icon">⚙️</span> Settings
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-card" id="sidebar-user-card">
+        <div class="user-avatar" id="user-avatar-sidebar">S</div>
+        <div class="user-info">
+          <div class="user-name" id="user-name-sidebar">Student</div>
+          <div class="user-email" id="user-email-sidebar">student@email.com</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="main-content" id="main-content">
+    <!-- Top bar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button class="menu-toggle" id="menu-toggle">☰</button>
+        <h1 class="page-title" id="page-title">Dashboard</h1>
+      </div>
+      <div class="top-bar-right">
+        <button class="icon-btn" id="theme-toggle-btn" title="Toggle theme">🌙</button>
+        <button class="icon-btn" id="notif-btn" title="Notifications">
+          🔔<span class="badge-dot" id="notif-dot" style="display:none"></span>
+        </button>
+        <button class="icon-btn" id="logout-btn" title="Logout">🚪</button>
+      </div>
+    </header>
+
+    <div class="page-content">
+      <!-- ===== DASHBOARD SECTION ===== -->
+      <section class="content-section active" id="section-dashboard">
+        <div class="stats-grid" id="dashboard-stats-grid">
+          <div class="stat-card"><div class="stat-icon purple">📄</div><div class="stat-label">PDFs Uploaded</div><div class="stat-value" id="stat-pdfs">0</div></div>
+          <div class="stat-card"><div class="stat-icon blue">❓</div><div class="stat-label">Questions Analyzed</div><div class="stat-value" id="stat-questions">0</div></div>
+          <div class="stat-card"><div class="stat-icon green">🧠</div><div class="stat-label">MCQs Attempted</div><div class="stat-value" id="stat-mcqs">0</div></div>
+          <div class="stat-card"><div class="stat-icon orange">⭐</div><div class="stat-label">Average Score</div><div class="stat-value" id="stat-avg-score">0 / 20</div></div>
+          <div class="stat-card"><div class="stat-icon red">🔴</div><div class="stat-label">High Priority Left</div><div class="stat-value" id="stat-hp">0</div></div>
+          <div class="stat-card"><div class="stat-icon purple">📚</div><div class="stat-label">Weak Chapters</div><div class="stat-value" id="stat-weak" style="font-size:0.95rem">None</div></div>
+          <div class="stat-card"><div class="stat-icon green">📈</div><div class="stat-label">Study Progress</div><div class="stat-value" id="stat-progress">0%</div><div class="progress-bar mt-2"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card"><h3>Priority Distribution</h3><div class="chart-wrapper"><canvas id="chart-priority"></canvas></div></div>
+          <div class="chart-card"><h3>MCQ Score History</h3><div class="chart-wrapper"><canvas id="chart-scores"></canvas></div></div>
+        </div>
+      </section>
+
+      <!-- ===== PDF ANALYZER SECTION ===== -->
+      <section class="content-section" id="section-pdf-analyzer">
+        <div class="section-header">
+          <div><h2>📄 Question Paper Analyzer</h2><p class="section-desc">Upload a PDF question paper to analyze every question</p></div>
+        </div>
+        <div class="upload-zone" id="pdf-upload-zone">
+          <input type="file" id="pdf-file-input" accept=".pdf">
+          <div class="upload-icon">📤</div>
+          <div class="upload-text">Drop your PDF here or click to browse</div>
+          <div class="upload-hint">Only .pdf files accepted</div>
+        </div>
+        <div id="pdf-analysis-results" style="display:none">
+          <!-- Study Report Cards -->
+          <div class="section-header mt-6"><h2>📊 Overall Study Report</h2></div>
+          <div class="report-grid" id="report-grid"></div>
+          <!-- Filter & Sort -->
+          <div class="filter-bar" id="analysis-filter-bar">
+            <button class="filter-chip active" data-filter="all">All</button>
+            <button class="filter-chip" data-filter="High">🔴 High</button>
+            <button class="filter-chip" data-filter="Medium">🟠 Medium</button>
+            <button class="filter-chip" data-filter="Low">🟢 Low</button>
+            <select class="sort-select" id="analysis-sort">
+              <option value="importance">Sort: Importance</option>
+              <option value="repeated">Sort: Repeated</option>
+              <option value="difficulty">Sort: Difficulty</option>
+              <option value="marks">Sort: Marks</option>
+            </select>
+          </div>
+          <!-- Analysis Table -->
+          <div class="data-table-wrap">
+            <table class="data-table" id="analysis-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Question</th>
+                  <th>Priority</th>
+                  <th>Importance %</th>
+                  <th>Repeated</th>
+                  <th>Difficulty</th>
+                  <th>Avg Marks</th>
+                  <th>Recommendation</th>
+                </tr>
+              </thead>
+              <tbody id="analysis-tbody"></tbody>
+            </table>
+          </div>
+          <!-- Generate MCQ Button -->
+          <div style="text-align:center;margin-top:28px">
+            <button class="btn btn-primary btn-lg" id="generate-mcq-from-pdf">🧠 Generate MCQ Test</button>
+            <button class="btn btn-secondary btn-lg" id="generate-study-plan-btn" style="margin-left:12px">📅 Generate Study Plan</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== MCQ TEST SECTION ===== -->
+      <section class="content-section" id="section-mcq-test">
+        <!-- MCQ Start Screen -->
+        <div id="mcq-start-screen">
+          <div class="section-header"><h2>🧠 MCQ Practice Test</h2></div>
+          <div class="glass-card" style="max-width:500px;margin:0 auto;text-align:center">
+            <div style="font-size:3rem;margin-bottom:16px">📝</div>
+            <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:8px">Ready to Practice?</h3>
+            <p style="color:var(--text-tertiary);margin-bottom:24px">20 MCQs • Countdown timer • Instant results</p>
+            <div class="form-group" style="text-align:left">
+              <label class="form-label">Select Subject</label>
+              <select class="form-input" id="mcq-subject-select">
+                <option value="Embedded Systems">Embedded Systems</option>
+                <option value="Antennas and Propagation">Antennas and Propagation</option>
+              </select>
+            </div>
+            <button class="btn btn-primary btn-lg" id="start-mcq-btn" style="width:100%">Start Test</button>
+          </div>
+        </div>
+        <!-- MCQ Quiz -->
+        <div id="mcq-quiz-screen" style="display:none">
+          <div class="quiz-container">
+            <div class="quiz-header">
+              <span class="quiz-question-number" id="quiz-q-number">Question 1 of 20</span>
+              <div class="quiz-timer" id="quiz-timer">⏱️ <span id="timer-display">20:00</span></div>
+            </div>
+            <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quiz-progress-fill" style="width:5%"></div></div>
+            <div class="quiz-question-card">
+              <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap" id="quiz-badges"></div>
+              <p class="quiz-question-text" id="quiz-question-text">Loading...</p>
+              <div class="quiz-options" id="quiz-options"></div>
+            </div>
+            <div class="quiz-nav">
+              <button class="btn btn-secondary" id="quiz-prev-btn">← Previous</button>
+              <button class="btn btn-secondary" id="quiz-next-btn">Next →</button>
+              <button class="btn btn-primary" id="quiz-submit-btn" style="display:none">Submit Test</button>
+            </div>
+          </div>
+        </div>
+        <!-- MCQ Result -->
+        <div id="mcq-result-screen" style="display:none"></div>
+      </section>
+
+      <!-- ===== STUDY PLANNER SECTION ===== -->
+      <section class="content-section" id="section-study-planner">
+        <div class="section-header"><h2>📅 Study Planner</h2><p class="section-desc">Your personalized study schedule</p></div>
+        <div id="study-plan-content">
+          <div class="empty-state">
+            <div class="empty-icon">📅</div>
+            <h3>No Study Plan Yet</h3>
+            <p>Upload and analyze a question paper first, then generate a personalized study plan.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== PYQ CHECKER SECTION ===== -->
+      <section class="content-section" id="section-pyq-checker">
+        <div class="section-header"><h2>🔍 PYQ Priority Check</h2><p class="section-desc">Check the priority of any question against past papers</p></div>
+        <div class="glass-card" style="max-width:700px">
+          <div class="form-group">
+            <label class="form-label">Enter a Question</label>
+            <textarea class="form-input" id="pyq-question-input" rows="3" placeholder="e.g. Explain Patch Antenna" style="resize:vertical"></textarea>
+          </div>
+          <button class="btn btn-primary" id="pyq-check-btn">Check Priority</button>
+          <div id="pyq-result-area" style="margin-top:20px"></div>
+        </div>
+      </section>
+
+      <!-- ===== HISTORY SECTION ===== -->
+      <section class="content-section" id="section-history">
+        <div class="section-header"><h2>📜 History</h2></div>
+        <div id="history-content">
+          <div class="empty-state"><div class="empty-icon">📜</div><h3>No History Yet</h3><p>Your analysis and test history will appear here.</p></div>
+        </div>
+      </section>
+
+      <!-- ===== PROFILE SECTION ===== -->
+      <section class="content-section" id="section-profile">
+        <div class="section-header"><h2>👤 Profile</h2></div>
+        <div class="profile-header">
+          <div class="profile-avatar-large" id="profile-avatar-large">S</div>
+          <div class="profile-info">
+            <h2 id="profile-name">Student</h2>
+            <p id="profile-email">student@email.com</p>
+            <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+              <span class="badge badge-accent" id="profile-branch">—</span>
+              <span class="badge badge-info" id="profile-semester">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="glass-card">
+          <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:20px">Edit Profile</h3>
+          <form id="profile-form">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="edit-name"></div>
+              <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="edit-email" type="email"></div>
+              <div class="form-group"><label class="form-label">College</label><input class="form-input" id="edit-college"></div>
+              <div class="form-group"><label class="form-label">Branch</label><input class="form-input" id="edit-branch"></div>
+              <div class="form-group"><label class="form-label">Semester</label><input class="form-input" id="edit-semester"></div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-4">Save Changes</button>
+          </form>
+        </div>
+        <div class="glass-card mt-4">
+          <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:20px">Change Password</h3>
+          <form id="change-pwd-form">
+            <div class="form-group"><label class="form-label">Current Password</label><input type="password" class="form-input" id="current-pwd"></div>
+            <div class="form-group"><label class="form-label">New Password</label><input type="password" class="form-input" id="new-pwd"></div>
+            <button type="submit" class="btn btn-primary">Update Password</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ===== SETTINGS SECTION ===== -->
+      <section class="content-section" id="section-settings">
+        <div class="section-header"><h2>⚙️ Settings</h2></div>
+        <div class="settings-section">
+          <h3>Appearance</h3>
+          <div class="setting-row">
+            <div><div class="setting-label">Dark Mode</div><div class="setting-desc">Toggle between dark and light theme</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="setting-dark-mode" checked><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div class="settings-section">
+          <h3>Notifications</h3>
+          <div class="setting-row">
+            <div><div class="setting-label">Enable Notifications</div><div class="setting-desc">Receive study reminders and alerts</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="setting-notifications" checked><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div class="settings-section">
+          <h3>Preferences</h3>
+          <div class="setting-row">
+            <div><div class="setting-label">Auto Save</div><div class="setting-desc">Automatically save your progress</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="setting-auto-save" checked><span class="toggle-slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">Language</div><div class="setting-desc">Interface language</div></div>
+            <select class="sort-select" id="setting-language"><option>English</option></select>
+          </div>
+        </div>
+        <button class="btn btn-primary mt-4" id="save-settings-btn">Save Settings</button>
+      </section>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="/static/js/auth.js"></script>
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/dashboard.js"></script>
+  <script src="/static/js/pdf-analyzer.js"></script>
+  <script src="/static/js/mcq.js"></script>
+  <script src="/static/js/study-planner.js"></script>
+  <script src="/static/js/profile.js"></script>
+</body>
+</html>
