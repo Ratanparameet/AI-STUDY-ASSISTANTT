@@ -80,6 +80,10 @@ function renderAnalysisResults() {
   const uploadZone = document.getElementById('pdf-upload-zone');
   if (uploadZone) uploadZone.style.display = 'none';
 
+  // Show header reset button
+  const sideBtn = document.getElementById('reset-pdf-analysis-btn-side');
+  if (sideBtn) sideBtn.style.display = 'inline-flex';
+
   // Render report cards
   renderReportCards(analysisData.report);
 
@@ -207,6 +211,12 @@ function initAnalysisFilters() {
   if (resetBtn) {
     resetBtn.addEventListener('click', resetPdfAnalysis);
   }
+
+  // Side Reset Button (in header)
+  const sideResetBtn = document.getElementById('reset-pdf-analysis-btn-side');
+  if (sideResetBtn) {
+    sideResetBtn.addEventListener('click', resetPdfAnalysis);
+  }
 }
 
 function resetPdfAnalysis() {
@@ -220,6 +230,10 @@ function resetPdfAnalysis() {
   // Hide results
   const resultsDiv = document.getElementById('pdf-analysis-results');
   if (resultsDiv) resultsDiv.style.display = 'none';
+
+  // Hide header reset button
+  const sideBtn = document.getElementById('reset-pdf-analysis-btn-side');
+  if (sideBtn) sideBtn.style.display = 'none';
   
   // Clear file input
   const fileInput = document.getElementById('pdf-file-input');
