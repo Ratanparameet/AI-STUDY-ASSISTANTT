@@ -168,12 +168,22 @@
           <div class="glass-card" style="max-width:500px;margin:0 auto;text-align:center">
             <div style="font-size:3rem;margin-bottom:16px">📝</div>
             <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:8px">Ready to Practice?</h3>
-            <p style="color:var(--text-tertiary);margin-bottom:24px">20 MCQs • Countdown timer • Instant results</p>
+            <p style="color:var(--text-tertiary);margin-bottom:24px">10-20 MCQs • Dynamic timer • Instant results</p>
             <div class="form-group" style="text-align:left">
               <label class="form-label">Select Subject</label>
               <select class="form-input" id="mcq-subject-select">
                 <option value="Embedded Systems">Embedded Systems</option>
-                <option value="Antennas and Propagation">Antennas and Propagation</option>
+                <option value="Antennas and Propagation">Antennas and Propagation (AWP)</option>
+              </select>
+            </div>
+            <div class="form-group" style="text-align:left;margin-top:16px;margin-bottom:24px">
+              <label class="form-label">Select Exam Type</label>
+              <select class="form-input" id="mcq-type-select">
+                <option value="Full Syllabus Mock Test">1. Full Syllabus Mock Test (20 Qs)</option>
+                <option value="Unit Test I: Core Concepts">2. Unit Test I: Core Concepts (10 Qs)</option>
+                <option value="Unit Test II: Advanced Applications">3. Unit Test II: Advanced Applications (10 Qs)</option>
+                <option value="High-Priority PYQ Focus">4. High-Priority PYQ Focus (10 Qs)</option>
+                <option value="Quick Practice Quiz">5. Quick Practice Quiz (10 Qs)</option>
               </select>
             </div>
             <button class="btn btn-primary btn-lg" id="start-mcq-btn" style="width:100%">Start Test</button>

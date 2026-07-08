@@ -1617,9 +1617,22 @@ async def generate_mcq(request: Request):
     user_id = get_current_user_id(request)
     data = await request.json()
     subject = data.get("subject", "Embedded Systems")
+    exam_type = data.get("exam_type", "Full Syllabus Mock Test")
     
     pool = MCQ_POOL.get(subject, MCQ_POOL["Embedded Systems"])
-    selected_questions = random.sample(pool, min(20, len(pool)))
+    
+    # 5 different exam types for both Embedded Systems and AWP
+    if exam_type == "Unit Test I: Core Concepts":
+        selected_questions = pool[:10]
+    elif exam_type == "Unit Test II: Advanced Applications":
+        selected_questions = pool[10:20]
+    elif exam_type == "High-Priority PYQ Focus":
+        priority_qs = [q for q in pool if q.get("priority") in ("High", "Medium")]
+        selected_questions = random.sample(priority_qs, min(10, len(priority_qs)))
+    elif exam_type == "Quick Practice Quiz":
+        selected_questions = random.sample(pool, min(10, len(pool)))
+    else: # Full Syllabus Mock Test
+        selected_questions = random.sample(pool, min(20, len(pool)))
     
     test_id = random.randint(100000, 999999)
     ACTIVE_TESTS[test_id] = {

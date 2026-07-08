@@ -27,13 +27,16 @@ async function startMcqTest() {
   const subjectSelect = document.getElementById('mcq-subject-select');
   mcqSubject = subjectSelect ? subjectSelect.value : 'Embedded Systems';
 
+  const typeSelect = document.getElementById('mcq-type-select');
+  const mcqType = typeSelect ? typeSelect.value : 'Full Syllabus Mock Test';
+
   showLoading('Generating MCQ test...');
 
   try {
     const res = await Auth.fetchWithAuth('/generate-mcq', {
       method: 'POST',
       headers: Auth.getHeaders(),
-      body: JSON.stringify({ subject: mcqSubject })
+      body: JSON.stringify({ subject: mcqSubject, exam_type: mcqType })
     });
 
     hideLoading();
@@ -45,7 +48,7 @@ async function startMcqTest() {
     mcqTestId = data.test_id;
     mcqAnswers = {};
     currentQIndex = 0;
-    totalSeconds = 20 * 60;
+    totalSeconds = mcqQuestions.length * 60; // 1 minute per question (dynamic)
     startTime = Date.now();
 
     if (mcqQuestions.length === 0) {
